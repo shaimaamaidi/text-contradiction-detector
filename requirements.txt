@@ -1,0 +1,8 @@
+load-dotenv
+python-dotenv
+openai
+pydantic
+fastapi
+uvicorn
+pyyaml
+jinja2

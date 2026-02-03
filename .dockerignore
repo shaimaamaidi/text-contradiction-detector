@@ -1,9 +1,7 @@
-# Git
 .git
 .gitignore
 .gitattributes
 
-# Python
 __pycache__
 *.pyc
 *.pyo
@@ -28,7 +26,6 @@ coverage.xml
 .dmypy.json
 dmypy.json
 
-# IDE
 .vscode/
 .idea/
 *.swp
@@ -36,30 +33,26 @@ dmypy.json
 *~
 .DS_Store
 
-# Environment
+
 .env
 .env.local
 .env.*.local
 
-# Tests
 tests/
 pytest.ini
 
-# Documentation
 *.md
 LICENSE
 
-# Docker
 Dockerfile
 docker-compose.yml
 .dockerignore
 
-# Node (if applicable)
 node_modules/
 npm-debug.log
 yarn-error.log
 
-# Misc
+
 .tmp/
 tmp/
 *.log

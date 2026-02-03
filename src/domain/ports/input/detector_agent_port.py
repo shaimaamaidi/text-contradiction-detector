@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import List
 
 from src.domain.models.classification_result import ClassificationResult
 from src.domain.models.contradiction_result import ContradictionResult

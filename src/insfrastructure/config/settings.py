@@ -1,18 +1,26 @@
-# infrastructure/config/settings.py
+"""
+Module: settings
+Description:
+    Centralized configuration for Azure OpenAI.
+    Loads environment variables from a .env file and validates them.
+"""
+
 import os
 from dotenv import load_dotenv
-
-# Charger automatiquement les variables d'environnement depuis le fichier .env
-load_dotenv()
 
 
 class AzureOpenAISettings:
     """
-    Configuration centralisée pour Azure OpenAI.
-    Lit les variables depuis le fichier .env et fournit une validation.
+    Centralized configuration for Azure OpenAI.
+    Reads environment variables from a .env file and performs basic validation.
     """
 
     def __init__(self):
+        """
+        Initializes the Azure OpenAI settings by reading environment variables
+        and validating that all required settings are provided.
+        """
+        load_dotenv()
         self.endpoint: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
         self.api_key: str = os.getenv("AZURE_OPENAI_API_KEY", "")
         self.api_version: str = os.getenv("AZURE_OPENAI_API_VERSION", "")
@@ -21,7 +29,12 @@ class AzureOpenAISettings:
         self._validate()
 
     def _validate(self):
-        """Vérifie que toutes les variables essentielles sont présentes"""
+        """
+        Checks that all essential environment variables are present.
+
+        Raises:
+            ValueError: If any required environment variable is missing.
+        """
         if not all([self.endpoint, self.api_key, self.api_version, self.model]):
             missing = [
                 name
@@ -34,7 +47,5 @@ class AzureOpenAISettings:
                 if not value
             ]
             raise ValueError(
-                f"Les variables d'environnement suivantes sont manquantes : {', '.join(missing)}"
+                f"The following environment variables are missing: {', '.join(missing)}"
             )
-
-

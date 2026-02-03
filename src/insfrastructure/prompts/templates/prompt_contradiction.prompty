@@ -31,6 +31,7 @@ system: |
   - No preamble, explanation, or markdown formatting.
   - All text content (comments) must be in Arabic.
   - Use the exact structure shown below.
+  -Return only the numbers of the sentences in each category, not the sentences themselves.
 
   **Output Format:**
   {

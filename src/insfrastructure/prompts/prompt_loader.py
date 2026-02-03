@@ -1,3 +1,10 @@
+"""
+Module: prompty_loader
+Description:
+    Implementation of a YAML-based .prompty file loader.
+    Supports system and user sections and renders prompts using Jinja2 templates.
+"""
+
 from pathlib import Path
 from typing import Dict, Any, Optional
 import yaml
@@ -7,14 +14,18 @@ from src.domain.ports.input.prompt_provider_port import PromptProviderPort
 
 
 class PromptyLoader(PromptProviderPort):
-    """Implémentation du chargeur de fichiers .prompty au format YAML avec sections system/user."""
+    """
+    Loader for .prompty files in YAML format, supporting 'system' and 'user' sections.
+    Provides methods to fetch and render prompts using Jinja2 templates.
+    """
 
     def __init__(self, templates_dir: Optional[str] = None):
         """
-        Initialise le loader.
+        Initializes the prompt loader.
 
         Args:
-            templates_dir: Chemin vers le répertoire des templates
+            templates_dir (Optional[str]): Path to the directory containing prompt templates.
+                                           Defaults to a 'templates' folder next to this file.
         """
         if templates_dir is None:
             current_dir = Path(__file__).parent
@@ -28,28 +39,27 @@ class PromptyLoader(PromptProviderPort):
     @staticmethod
     def _parse_prompty_file(file_path: Path) -> Dict[str, Any]:
         """
-        Parse un fichier .prompty avec frontmatter YAML.
+        Parses a .prompty file with YAML frontmatter.
 
         Args:
-            file_path: Chemin vers le fichier .prompty
+            file_path (Path): Path to the .prompty file.
 
         Returns:
-            Dict contenant les métadonnées et les sections (system, user)
+            Dict[str, Any]: Dictionary containing metadata and prompt sections ('system', 'user').
         """
         with open(file_path, 'r', encoding='utf-8') as f:
             content = f.read()
 
-        # Séparer le frontmatter YAML (entre ---)
+        # Split YAML frontmatter (between ---)
         parts = content.split('---')
         if len(parts) < 3:
             raise ValueError(f"Invalid .prompty file format: {file_path}")
 
-        # Parser le YAML du frontmatter
+        # Parse YAML metadata from frontmatter
         metadata = yaml.safe_load(parts[1])
 
-        # Récupérer le contenu du prompt après le frontmatter
+        # Parse remaining content YAML for 'system' and 'user' sections
         prompt_content = '---'.join(parts[2:]).strip()
-        # Parser le contenu YAML interne s'il existe (system/user)
         content_dict = yaml.safe_load(prompt_content)
 
         if not content_dict or 'system' not in content_dict or 'user' not in content_dict:
@@ -62,15 +72,15 @@ class PromptyLoader(PromptProviderPort):
 
     def _load_prompt(self, prompt_name: str, section: str = "system", **kwargs: Any) -> str:
         """
-        Charge et formate un prompt pour une section donnée.
+        Loads and renders a prompt for a given section using Jinja2.
 
         Args:
-            prompt_name: Nom du fichier (sans extension)
-            section: Section du prompt à récupérer ("system" ou "user")
-            **kwargs: Variables pour le template Jinja2
+            prompt_name (str): Name of the prompt file (without extension).
+            section (str): Section of the prompt to fetch ('system' or 'user').
+            **kwargs: Variables to render in the Jinja2 template.
 
         Returns:
-            str: Le prompt formaté
+            str: The formatted prompt.
         """
         file_path = self.templates_dir / f"{prompt_name}.prompty"
 
@@ -85,7 +95,7 @@ class PromptyLoader(PromptProviderPort):
 
         prompt_content = prompt_sections[section]
 
-        # Valider les inputs si définis dans les métadonnées
+        # Validate inputs defined in metadata
         metadata = prompty_data['metadata']
         if 'inputs' in metadata:
             required_inputs = set(metadata['inputs'].keys())
@@ -97,16 +107,34 @@ class PromptyLoader(PromptProviderPort):
                     f"Missing required inputs for {prompt_name}: {missing_inputs}"
                 )
 
-        # Formatter avec Jinja2
+        # Render the template with Jinja2
         template = Template(prompt_content)
         formatted_prompt = template.render(**kwargs)
 
         return formatted_prompt
 
     def get_system_prompt(self, prompt_name: str, **kwargs: Any) -> str:
-        """Récupère le prompt système formaté."""
+        """
+        Retrieves the formatted system prompt.
+
+        Args:
+            prompt_name (str): Name of the prompt.
+            **kwargs: Variables to render in the template.
+
+        Returns:
+            str: Formatted system prompt.
+        """
         return self._load_prompt(prompt_name, section="system", **kwargs)
 
     def get_user_prompt(self, prompt_name: str, **kwargs: Any) -> str:
-        """Récupère le prompt user formaté."""
+        """
+        Retrieves the formatted user prompt.
+
+        Args:
+            prompt_name (str): Name of the prompt.
+            **kwargs: Variables to render in the template.
+
+        Returns:
+            str: Formatted user prompt.
+        """
         return self._load_prompt(prompt_name, section="user", **kwargs)

@@ -26,9 +26,9 @@ class TextAnalysisService:
             classification: ClassificationResponse
             contradictions: List[ContradictionResponse]
         """
-        # Étape 1 : Classification
+        # Classification
         classification_result = self.classifier_agent.classify_sentences(sentences)
-        # Étape 2 : Détection de contradictions
+        # Détection de contradictions
         contradictions_result = self.detector_agent.detect_contradiction(classification_result)
 
         return contradictions_result

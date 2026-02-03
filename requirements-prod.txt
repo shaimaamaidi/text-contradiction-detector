@@ -6,7 +6,3 @@ fastapi
 uvicorn
 pyyaml
 jinja2
-pytest
-pytest-cov
-pytest-asyncio
-pytest-mock

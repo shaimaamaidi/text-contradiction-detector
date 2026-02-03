@@ -33,6 +33,7 @@ system: |
   - Category names must be in Arabic only.
   - Respond ONLY with JSON.
   - RESPOND **ONLY** with the JSON object. Do NOT include any text, Markdown, or explanation. Do NOT write the word 'json' at the beginning or end.
+  -Return only the numbers of the sentences in each category, not the sentences themselves.
 
   Strict output format (JSON only):
         {

@@ -1,6 +1,6 @@
 from typing import List
 
-from src.domain.models.contradiction_result import ContradictionResult
+from src.domain.models.contradiction_result import AnalysisContradictionResult
 from src.domain.ports.input.classifier_agent_port import ClassifierAgentPort
 from src.domain.ports.input.detector_agent_port import DetectorAgentPort
 
@@ -16,7 +16,7 @@ class TextAnalysisService:
         self.classifier_agent = classifier_agent
         self.detector_agent = detector_agent
 
-    def analyze_text(self, sentences: List[str]) -> List[ContradictionResult]:
+    def analyze_text(self, sentences: List[str]) -> AnalysisContradictionResult:
         """
         Analyse un ensemble de phrases :
         1. Classification
@@ -26,9 +26,9 @@ class TextAnalysisService:
             classification: ClassificationResponse
             contradictions: List[ContradictionResponse]
         """
-        # Étape 1 : Classification
+        # Classification
         classification_result = self.classifier_agent.classify_sentences(sentences)
-        # Étape 2 : Détection de contradictions
+        # Détection de contradictions
         contradictions_result = self.detector_agent.detect_contradiction(classification_result)
 
         return contradictions_result

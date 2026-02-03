@@ -1,3 +1,12 @@
+"""
+Module: main_api
+Description:
+    FastAPI application exposing endpoints for text analysis and contradiction detection.
+    Provides:
+        - POST /analyze: Analyze sentences, classify them, and detect contradictions.
+        - GET /health: Health check endpoint.
+"""
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -5,10 +14,10 @@ from src.application.dto.analysis_request import AnalysisRequest
 from src.application.dto.analysis_response import AnalysisResponse
 from src.insfrastructure.di.container import Container
 
-# === INITIALISATION DE FASTAPI ===
+# === FASTAPI INITIALIZATION ===
 app = FastAPI(title="Text Contradiction API")
 
-# Autoriser le CORS si nécessaire
+# Enable CORS if needed
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,19 +26,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# === INIT AGENTS ET SERVICES ===
+# === INIT AGENTS AND SERVICES ===
 container = Container()
-# === ENDPOINT POST POUR ANALYSE DE TEXTE ===
+
+# === POST ENDPOINT FOR TEXT ANALYSIS ===
 @app.post("/analyze", response_model=AnalysisResponse)
 async def analyze_text(request: AnalysisRequest):
     """
-    Analyse un ensemble de phrases :
-    - Classification
-    - Détection des contradictions
-    Retourne la liste des contradictions détectées.
+    Analyze a set of sentences:
+        - Classification
+        - Contradiction detection
+    Returns the list of detected contradictions.
+
+    Args:
+        request (AnalysisRequest): Request containing sentences to analyze.
+
+    Returns:
+        AnalysisResponse: DTO containing detected contradictions.
     """
     if not request.sentences:
-        raise HTTPException(status_code=400, detail="La liste de phrases est vide.")
+        raise HTTPException(status_code=400, detail="The list of sentences is empty.")
 
     try:
         response: AnalysisResponse = container.analyze_text_use_case.execute(request)
@@ -38,7 +54,13 @@ async def analyze_text(request: AnalysisRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-# === ENDPOINT HEALTH CHECK ===
+# === HEALTH CHECK ENDPOINT ===
 @app.get("/health")
 async def health():
+    """
+    Health check endpoint.
+
+    Returns:
+        dict: {"status": "ok"} if service is running.
+    """
     return {"status": "ok"}

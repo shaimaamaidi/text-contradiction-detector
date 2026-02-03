@@ -56,10 +56,9 @@ class TestAnalysisRequest:
         request = AnalysisRequest(sentences=sample_sentences)
 
         # Act
-        if hasattr(request, 'dict'):
-            data = request.dict()
-            assert "sentences" in data
-            assert data["sentences"] == sample_sentences
+        data = request.model_dump()
+        assert "sentences" in data
+        assert data["sentences"] == sample_sentences
 
 
 class TestAnalysisResponse:

@@ -34,17 +34,20 @@ class TestAnalyzeTextUseCase:
         # Arrange
         request = AnalysisRequest(sentences=sample_sentences)
         expected_response = AnalysisResponse(
-            classifications=[{"sentence": s, "classification": "support"} for s in sample_sentences],
-            contradictions=[]
+            categories=[{
+                "category_name": "support",
+                "statements": sample_sentences,
+                "contradictions": []
+            }]
         )
-        mock_text_analysis_service.analyze.return_value = expected_response
+        mock_text_analysis_service.analyze_text.return_value = expected_response
 
         # Act
         result = analyse_use_case.execute(request)
 
         # Assert
         assert result is not None
-        mock_text_analysis_service.analyze.assert_called_once_with(sample_sentences)
+        mock_text_analysis_service.analyze_text.assert_called_once_with(sample_sentences)
 
     def test_execute_with_empty_sentences(self, analyse_use_case, mock_text_analysis_service):
         """
@@ -52,9 +55,8 @@ class TestAnalyzeTextUseCase:
         """
         # Arrange
         request = AnalysisRequest(sentences=[])
-        mock_text_analysis_service.analyze.return_value = AnalysisResponse(
-            classifications=[],
-            contradictions=[]
+        mock_text_analysis_service.analyze_text.return_value = AnalysisResponse(
+            categories=[]
         )
 
         # Act
@@ -62,8 +64,7 @@ class TestAnalyzeTextUseCase:
 
         # Assert
         assert result is not None
-        assert result.classifications == []
-        assert result.contradictions == []
+        assert len(result.categories) == 0
 
     def test_execute_with_single_sentence(self, analyse_use_case, sample_single_sentence, mock_text_analysis_service):
         """
@@ -72,17 +73,20 @@ class TestAnalyzeTextUseCase:
         # Arrange
         request = AnalysisRequest(sentences=[sample_single_sentence])
         expected_response = AnalysisResponse(
-            classifications=[{"sentence": sample_single_sentence, "classification": "support"}],
-            contradictions=[]
+            categories=[{
+                "category_name": "support",
+                "statements": [sample_single_sentence],
+                "contradictions": []
+            }]
         )
-        mock_text_analysis_service.analyze.return_value = expected_response
+        mock_text_analysis_service.analyze_text.return_value = expected_response
 
         # Act
         result = analyse_use_case.execute(request)
 
         # Assert
         assert result is not None
-        assert len(result.classifications) == 1
+        assert len(result.categories) == 1
 
     def test_execute_detects_contradictions(self, analyse_use_case, contradictory_sentences, mock_text_analysis_service):
         """
@@ -91,24 +95,24 @@ class TestAnalyzeTextUseCase:
         # Arrange
         request = AnalysisRequest(sentences=contradictory_sentences)
         expected_response = AnalysisResponse(
-            classifications=[
-                {"sentence": contradictory_sentences[0], "classification": "support"},
-                {"sentence": contradictory_sentences[1], "classification": "reject"}
-            ],
-            contradictions=[{
-                "sentence1": contradictory_sentences[0],
-                "sentence2": contradictory_sentences[1],
-                "contradiction_detected": True
+            categories=[{
+                "category_name": "support",
+                "statements": contradictory_sentences,
+                "contradictions": [{
+                    "statements": contradictory_sentences,
+                    "severity": "حاد",
+                    "comment": "Contradiction detected"
+                }]
             }]
         )
-        mock_text_analysis_service.analyze.return_value = expected_response
+        mock_text_analysis_service.analyze_text.return_value = expected_response
 
         # Act
         result = analyse_use_case.execute(request)
 
         # Assert
         assert result is not None
-        assert len(result.contradictions) > 0
+        assert len(result.categories[0].contradictions) > 0
 
     def test_execute_service_exception_handling(self, analyse_use_case, sample_sentences, mock_text_analysis_service):
         """
@@ -129,17 +133,17 @@ class TestAnalyzeTextUseCase:
         # Arrange
         request = AnalysisRequest(sentences=non_contradictory_sentences)
         expected_response = AnalysisResponse(
-            classifications=[
-                {"sentence": non_contradictory_sentences[0], "classification": "support"},
-                {"sentence": non_contradictory_sentences[1], "classification": "support"}
-            ],
-            contradictions=[]
+            categories=[{
+                "category_name": "support",
+                "statements": non_contradictory_sentences,
+                "contradictions": []
+            }]
         )
-        mock_text_analysis_service.analyze.return_value = expected_response
+        mock_text_analysis_service.analyze_text.return_value = expected_response
 
         # Act
         result = analyse_use_case.execute(request)
 
         # Assert
         assert result is not None
-        assert len(result.contradictions) == 0
+        assert len(result.categories[0].contradictions) == 0

@@ -13,7 +13,7 @@ from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUs
 
 from src.domain.models.classification_result import ClassificationResult
 from src.domain.models.contradiction_llm_response import ContradictionLLMResponse
-from src.domain.models.contradiction_result import ContradictionResult, Contradiction
+from src.domain.models.contradiction_result import AnalysisContradictionResult, Contradiction, CategoryContradictionResult
 from src.domain.ports.input.detector_agent_port import DetectorAgentPort
 from src.insfrastructure.config.settings import AzureOpenAISettings
 from src.insfrastructure.prompts.prompt_loader import PromptyLoader
@@ -48,7 +48,7 @@ class ContradictionDetector(DetectorAgentPort):
     def detect_contradiction(
             self,
             classification_result: ClassificationResult
-    ) -> List[ContradictionResult]:
+    ) -> AnalysisContradictionResult:
         """
         Detects contradictions across all categories in a classification result.
 
@@ -58,22 +58,29 @@ class ContradictionDetector(DetectorAgentPort):
         Returns:
             List[ContradictionResult]: List of contradiction results per category.
         """
-        all_results: List[ContradictionResult] = []
+        all_results: List[CategoryContradictionResult] = []
 
         for category in classification_result.categories:
             # Skip categories with fewer than 2 sentences
             if len(category.phrases) < 2:
+                all_results.append(
+                    CategoryContradictionResult(
+                        category_name=category.name,
+                        statements=category.phrases,
+                        contradictions=[]
+                    )
+                )
                 continue
 
             # Get LLM response
             llm_response = self._detect_contradictions_per_category(category.phrases)
 
             # Map to domain model
-            contradiction_result = ContradictionDetector._map_llm_to_domain(llm_response, category.phrases)
+            contradiction_result = ContradictionDetector._map_llm_to_domain(llm_response, category.phrases, category.name)
 
             all_results.append(contradiction_result)
 
-        return all_results
+        return AnalysisContradictionResult(categories=all_results)
 
     def _detect_contradictions_per_category(self, sentences: List[str]) -> ContradictionLLMResponse:
         """
@@ -114,8 +121,9 @@ class ContradictionDetector(DetectorAgentPort):
     @staticmethod
     def _map_llm_to_domain(
             llm_response: ContradictionLLMResponse,
-            sentences: List[str]
-    ) -> ContradictionResult:
+            sentences: List[str],
+            category_name: str
+    ) -> CategoryContradictionResult:
         """
         Maps the LLM contradiction response to the domain model.
 
@@ -143,4 +151,8 @@ class ContradictionDetector(DetectorAgentPort):
                 )
             )
 
-        return ContradictionResult(contradictions=contradictions_list)
+        return CategoryContradictionResult(
+            category_name=category_name,
+            statements=sentences,
+            contradictions=contradictions_list
+        )

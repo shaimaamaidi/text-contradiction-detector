@@ -22,9 +22,9 @@ system: |
   1. Carefully examine each pair of sentences for contradictions.
   2. A contradiction exists when two sentences make mutually exclusive or incompatible claims about the same subject.
   3. For each contradiction found, provide:
-     - إفادات: Array of sentence numbers involved (e.g., [1, 2])
-     - مستوى_التعارض: Severity level - must be one of: "حاد" (severe) or "متوسط" (moderate)
-     - تعليق: Brief Arabic explanation (one sentence) describing the contradiction
+     - statements: Array of sentence numbers involved (e.g., [1, 2])
+     - severity: Severity level - must be one of: "حاد" (severe) or "متوسط" (moderate)
+     - comment: Brief Arabic explanation (one sentence) describing the contradiction
 
   **Strict rules:**
   - RESPOND **ONLY** with the JSON object. Do NOT include any text, Markdown, or explanation. Do NOT write the word 'json' at the beginning or end.
@@ -35,18 +35,18 @@ system: |
 
   **Output Format:**
   {
-    "التناقضات": [
+    "contradictions": [
       {
-        "إفادات": [1, 2],
-        "مستوى_التعارض": "حاد",
-        "تعليق": "إفادة 1 تتناقض مع إفادة 2 لأنها تشير إلى معطيات متعارضة على نفس الموضوع."
+        "statements": [1, 2],
+        "severity": "حاد",
+        "comment": "إفادة 1 تتناقض مع إفادة 2 لأنها تشير إلى معطيات متعارضة على نفس الموضوع."
       }
     ]
   }
 
   **If no contradictions are found:**
   {
-    "التناقضات": []
+    "contradictions": []
   }
 
   **Critical:** Output must be pure JSON only. All explanatory text must be in Arabic within the JSON structure.

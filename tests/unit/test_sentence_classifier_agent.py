@@ -41,14 +41,24 @@ class TestSentenceClassifier:
         Test classification of a support sentence.
         """
         # Arrange
-        mock_prompt_provider.get_classification_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_system_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_user_prompt.return_value = "Classify this"
         
-        # Act
-        result = classifier_agent.classify(sample_single_sentence)
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.classification_llm_response import ClassificationLLMResponse, CategoryLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ClassificationLLMResponse(
+            categories=[CategoryLLM(name="support", phrases=[1])]
+        )
+        
+        with patch.object(classifier_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            # Act
+            result = classifier_agent.classify_sentences([sample_single_sentence])
 
         # Assert
         assert result is not None
-        assert "classification" in result or "sentence" in result
 
     def test_classify_multiple_sentences(self, classifier_agent, sample_sentences,
                                          mock_prompt_provider):
@@ -56,15 +66,24 @@ class TestSentenceClassifier:
         Test classification of multiple sentences.
         """
         # Arrange
-        mock_prompt_provider.get_classification_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_system_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_user_prompt.return_value = "Classify these"
 
-        # Act
-        classifications = [classifier_agent.classify(s) for s in sample_sentences]
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.classification_llm_response import ClassificationLLMResponse, CategoryLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ClassificationLLMResponse(
+            categories=[CategoryLLM(name="support", phrases=[1, 2])]
+        )
+        
+        with patch.object(classifier_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            # Act
+            result = classifier_agent.classify_sentences(sample_sentences)
 
         # Assert
-        assert len(classifications) == len(sample_sentences)
-        for classification in classifications:
-            assert classification is not None
+        assert result is not None
 
     def test_classify_support_recommendation(self, classifier_agent, mock_prompt_provider):
         """
@@ -72,10 +91,21 @@ class TestSentenceClassifier:
         """
         # Arrange
         support_sentence = "أوصي باعتماد المقترح بشكل كامل والبدء في التنفيذ الفوري."
-        mock_prompt_provider.get_classification_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_system_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_user_prompt.return_value = "Classify this"
 
-        # Act
-        result = classifier_agent.classify(support_sentence)
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.classification_llm_response import ClassificationLLMResponse, CategoryLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ClassificationLLMResponse(
+            categories=[CategoryLLM(name="support", phrases=[1])]
+        )
+        
+        with patch.object(classifier_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            # Act
+            result = classifier_agent.classify_sentences([support_sentence])
 
         # Assert
         assert result is not None
@@ -86,10 +116,21 @@ class TestSentenceClassifier:
         """
         # Arrange
         reject_sentence = "أرى رفض المقترح في الوقت الحالي بسبب عدم وضوح التكلفة."
-        mock_prompt_provider.get_classification_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_system_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_user_prompt.return_value = "Classify this"
 
-        # Act
-        result = classifier_agent.classify(reject_sentence)
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.classification_llm_response import ClassificationLLMResponse, CategoryLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ClassificationLLMResponse(
+            categories=[CategoryLLM(name="reject", phrases=[1])]
+        )
+        
+        with patch.object(classifier_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            # Act
+            result = classifier_agent.classify_sentences([reject_sentence])
 
         # Assert
         assert result is not None
@@ -100,10 +141,21 @@ class TestSentenceClassifier:
         """
         # Arrange
         neutral_sentence = "أرى أن المقترح مناسب من حيث المبدأ، ولكن يحتاج إلى تعديل."
-        mock_prompt_provider.get_classification_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_system_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_user_prompt.return_value = "Classify this"
 
-        # Act
-        result = classifier_agent.classify(neutral_sentence)
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.classification_llm_response import ClassificationLLMResponse, CategoryLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ClassificationLLMResponse(
+            categories=[CategoryLLM(name="neutral", phrases=[1])]
+        )
+        
+        with patch.object(classifier_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            # Act
+            result = classifier_agent.classify_sentences([neutral_sentence])
 
         # Assert
         assert result is not None
@@ -115,13 +167,24 @@ class TestSentenceClassifier:
         """
         # Arrange
         expected_prompt = "Classify the following sentence in Arabic"
-        mock_prompt_provider.get_classification_prompt.return_value = expected_prompt
+        mock_prompt_provider.get_system_prompt.return_value = expected_prompt
+        mock_prompt_provider.get_user_prompt.return_value = "Classify this"
 
-        # Act
-        classifier_agent.classify(sample_single_sentence)
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.classification_llm_response import ClassificationLLMResponse, CategoryLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ClassificationLLMResponse(
+            categories=[CategoryLLM(name="support", phrases=[1])]
+        )
+        
+        with patch.object(classifier_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            # Act
+            classifier_agent.classify_sentences([sample_single_sentence])
 
         # Assert
-        mock_prompt_provider.get_classification_prompt.assert_called()
+        mock_prompt_provider.get_system_prompt.assert_called()
 
     def test_classify_empty_sentence(self, classifier_agent, mock_prompt_provider):
         """
@@ -129,13 +192,24 @@ class TestSentenceClassifier:
         """
         # Arrange
         empty_sentence = ""
-        mock_prompt_provider.get_classification_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_system_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_user_prompt.return_value = "Classify this"
 
-        # Act
-        result = classifier_agent.classify(empty_sentence)
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.classification_llm_response import ClassificationLLMResponse, CategoryLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ClassificationLLMResponse(
+            categories=[CategoryLLM(name="neutral", phrases=[1])]
+        )
+        
+        with patch.object(classifier_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            # Act
+            result = classifier_agent.classify_sentences([empty_sentence])
 
         # Assert
-        assert result is not None or result is None  # Comportement attendu selon implémentation
+        assert result is not None
 
     def test_classify_long_sentence(self, classifier_agent, mock_prompt_provider):
         """
@@ -143,10 +217,21 @@ class TestSentenceClassifier:
         """
         # Arrange
         long_sentence = "أوصي باعتماد المقترح " * 50  # Phrase très longue
-        mock_prompt_provider.get_classification_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_system_prompt.return_value = "Classification prompt"
+        mock_prompt_provider.get_user_prompt.return_value = "Classify this"
 
-        # Act
-        result = classifier_agent.classify(long_sentence)
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.classification_llm_response import ClassificationLLMResponse, CategoryLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ClassificationLLMResponse(
+            categories=[CategoryLLM(name="support", phrases=[1])]
+        )
+        
+        with patch.object(classifier_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            # Act
+            result = classifier_agent.classify_sentences([long_sentence])
 
         # Assert
         assert result is not None

@@ -72,100 +72,101 @@ class TestAnalysisResponse:
         Test creation of an AnalysisResponse instance.
         """
         # Arrange
-        classifications = [
-            {"sentence": "Phrase 1", "classification": "support"}
+        categories = [
+            {
+                "category_name": "support",
+                "statements": ["Phrase 1"],
+                "contradictions": []
+            }
         ]
-        contradictions = []
 
         # Act
-        response = AnalysisResponse(
-            classifications=classifications,
-            contradictions=contradictions
-        )
+        response = AnalysisResponse(categories=categories)
 
         # Assert
         assert response is not None
-        assert response.classifications == classifications
-        assert response.contradictions == contradictions
+        assert len(response.categories) == 1
 
     def test_analysis_response_with_contradictions(self):
         """
         Test response with detected contradictions.
         """
         # Arrange
-        classifications = [
-            {"sentence": "Phrase 1", "classification": "support"},
-            {"sentence": "Phrase 2", "classification": "reject"}
-        ]
-        contradictions = [
+        categories = [
             {
-                "sentence1": "Phrase 1",
-                "sentence2": "Phrase 2",
-                "contradiction": True
+                "category_name": "support",
+                "statements": ["Phrase 1", "Phrase 2"],
+                "contradictions": [
+                    {
+                        "statements": ["Phrase 1", "Phrase 2"],
+                        "severity": "حاد",
+                        "comment": "Test contradiction"
+                    }
+                ]
             }
         ]
 
         # Act
-        response = AnalysisResponse(
-            classifications=classifications,
-            contradictions=contradictions
-        )
+        response = AnalysisResponse(categories=categories)
 
         # Assert
-        assert len(response.contradictions) == 1
-        assert response.contradictions[0]["contradiction"] is True
+        assert len(response.categories) == 1
+        assert len(response.categories[0].contradictions) == 1
 
     def test_analysis_response_with_multiple_classifications(self, sample_sentences):
         """
         Test response with multiple classifications.
         """
         # Arrange
-        classifications = [
-            {"sentence": s, "classification": "support"} for s in sample_sentences
+        categories = [
+            {
+                "category_name": "support",
+                "statements": sample_sentences,
+                "contradictions": []
+            }
         ]
 
         # Act
-        response = AnalysisResponse(
-            classifications=classifications,
-            contradictions=[]
-        )
+        response = AnalysisResponse(categories=categories)
 
         # Assert
-        assert len(response.classifications) == len(sample_sentences)
+        assert len(response.categories) == 1
+        assert len(response.categories[0].statements) == len(sample_sentences)
 
     def test_analysis_response_empty_contradictions(self, sample_sentences):
         """
         Test response with no contradictions.
         """
         # Arrange
-        classifications = [
-            {"sentence": s, "classification": "support"} for s in sample_sentences
+        categories = [
+            {
+                "category_name": "support",
+                "statements": sample_sentences,
+                "contradictions": []
+            }
         ]
 
         # Act
-        response = AnalysisResponse(
-            classifications=classifications,
-            contradictions=[]
-        )
+        response = AnalysisResponse(categories=categories)
 
         # Assert
-        assert len(response.contradictions) == 0
+        assert len(response.categories[0].contradictions) == 0
 
     def test_analysis_response_serialization(self):
         """
         Test serialization of the response.
         """
         # Arrange
-        classifications = [
-            {"sentence": "Phrase 1", "classification": "support"}
+        categories = [
+            {
+                "category_name": "support",
+                "statements": ["Phrase 1"],
+                "contradictions": []
+            }
         ]
-        response = AnalysisResponse(
-            classifications=classifications,
-            contradictions=[]
-        )
+        response = AnalysisResponse(categories=categories)
 
         # Act
-        if hasattr(response, 'dict'):
-            data = response.dict()
-            assert "classifications" in data
-            assert "contradictions" in data
+        if hasattr(response, 'model_dump'):
+            data = response.model_dump()
+            assert "categories" in data

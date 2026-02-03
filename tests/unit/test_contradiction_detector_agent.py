@@ -41,10 +41,29 @@ class TestContradictionDetector:
         Test contradiction detection in a pair of sentences.
         """
         # Arrange
-        mock_prompt_provider.get_contradiction_prompt.return_value = "Contradiction detection prompt"
-
-        # Act
-        result = detector_agent.detect(contradictory_sentences)
+        mock_prompt_provider.get_system_prompt.return_value = "Detect contradictions"
+        mock_prompt_provider.get_user_prompt.return_value = "Find contradictions in sentences"
+        
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.contradiction_llm_response import ContradictionLLMResponse, ContradictionLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ContradictionLLMResponse(
+            contradictions=[ContradictionLLM(
+                statements=[1, 2],
+                severity_level="حاد",
+                comment="Test contradiction"
+            )]
+        )
+        
+        with patch.object(detector_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            from src.domain.models.classification_result import ClassificationResult, Category
+            classification_result = ClassificationResult(
+                categories=[Category(name="test", phrases=contradictory_sentences)]
+            )
+            # Act
+            result = detector_agent.detect_contradiction(classification_result)
 
         # Assert
         assert result is not None
@@ -55,10 +74,23 @@ class TestContradictionDetector:
         Test that no contradictions are detected for compatible sentences.
         """
         # Arrange
-        mock_prompt_provider.get_contradiction_prompt.return_value = "Contradiction detection prompt"
-
-        # Act
-        result = detector_agent.detect(non_contradictory_sentences)
+        mock_prompt_provider.get_system_prompt.return_value = "Detect contradictions"
+        mock_prompt_provider.get_user_prompt.return_value = "Find contradictions"
+        
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.contradiction_llm_response import ContradictionLLMResponse
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ContradictionLLMResponse(contradictions=[])
+        
+        with patch.object(detector_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            from src.domain.models.classification_result import ClassificationResult, Category
+            classification_result = ClassificationResult(
+                categories=[Category(name="test", phrases=non_contradictory_sentences)]
+            )
+            # Act
+            result = detector_agent.detect_contradiction(classification_result)
 
         # Assert
         assert result is not None
@@ -72,10 +104,29 @@ class TestContradictionDetector:
             "أوصي باعتماد المقترح بشكل كامل.",
             "أرى رفض المقترح في الوقت الحالي."
         ]
-        mock_prompt_provider.get_contradiction_prompt.return_value = "Contradiction detection prompt"
-
-        # Act
-        result = detector_agent.detect(sentences)
+        mock_prompt_provider.get_system_prompt.return_value = "Detect contradictions"
+        mock_prompt_provider.get_user_prompt.return_value = "Find contradictions"
+        
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.contradiction_llm_response import ContradictionLLMResponse, ContradictionLLM
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ContradictionLLMResponse(
+            contradictions=[ContradictionLLM(
+                statements=[1, 2],
+                severity_level="حاد",
+                comment="Contradiction found"
+            )]
+        )
+        
+        with patch.object(detector_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            from src.domain.models.classification_result import ClassificationResult, Category
+            classification_result = ClassificationResult(
+                categories=[Category(name="test", phrases=sentences)]
+            )
+            # Act
+            result = detector_agent.detect_contradiction(classification_result)
 
         # Assert
         assert result is not None
@@ -86,17 +137,26 @@ class TestContradictionDetector:
         Test contradiction detection in multiple sentences.
         """
         # Arrange
-        mock_prompt_provider.get_contradiction_prompt.return_value = "Contradiction detection prompt"
-
-        # Act
-        result = detector_agent.detect(sample_sentences)
+        mock_prompt_provider.get_system_prompt.return_value = "Detect contradictions"
+        mock_prompt_provider.get_user_prompt.return_value = "Find contradictions"
+        
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.contradiction_llm_response import ContradictionLLMResponse
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ContradictionLLMResponse(contradictions=[])
+        
+        with patch.object(detector_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            from src.domain.models.classification_result import ClassificationResult, Category
+            classification_result = ClassificationResult(
+                categories=[Category(name="test", phrases=sample_sentences)]
+            )
+            # Act
+            result = detector_agent.detect_contradiction(classification_result)
 
         # Assert
         assert result is not None
-        # Vérifier que le résultat est une liste ou un objet itérable
-        if isinstance(result, list):
-            # La liste peut être vide ou contenir des contradictions
-            pass
 
     def test_detect_with_single_sentence(self, detector_agent, sample_single_sentence,
                                         mock_prompt_provider):
@@ -107,7 +167,11 @@ class TestContradictionDetector:
         mock_prompt_provider.get_contradiction_prompt.return_value = "Contradiction detection prompt"
 
         # Act
-        result = detector_agent.detect([sample_single_sentence])
+        from src.domain.models.classification_result import ClassificationResult, Category
+        classification_result = ClassificationResult(
+            categories=[Category(name="test", phrases=[sample_single_sentence])]
+        )
+        result = detector_agent.detect_contradiction(classification_result)
 
         # Assert
         assert result is not None
@@ -121,7 +185,9 @@ class TestContradictionDetector:
         mock_prompt_provider.get_contradiction_prompt.return_value = "Contradiction detection prompt"
 
         # Act
-        result = detector_agent.detect(empty_sentences)
+        from src.domain.models.classification_result import ClassificationResult, Category
+        classification_result = ClassificationResult(categories=[])
+        result = detector_agent.detect_contradiction(classification_result)
 
         # Assert
         assert result is not None
@@ -133,13 +199,26 @@ class TestContradictionDetector:
         """
         # Arrange
         expected_prompt = "Detect contradictions between sentences"
-        mock_prompt_provider.get_contradiction_prompt.return_value = expected_prompt
-
-        # Act
-        detector_agent.detect(contradictory_sentences)
+        mock_prompt_provider.get_system_prompt.return_value = expected_prompt
+        mock_prompt_provider.get_user_prompt.return_value = "Find contradictions"
+        
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.contradiction_llm_response import ContradictionLLMResponse
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ContradictionLLMResponse(contradictions=[])
+        
+        with patch.object(detector_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            from src.domain.models.classification_result import ClassificationResult, Category
+            classification_result = ClassificationResult(
+                categories=[Category(name="test", phrases=contradictory_sentences)]
+            )
+            # Act
+            detector_agent.detect_contradiction(classification_result)
 
         # Assert
-        mock_prompt_provider.get_contradiction_prompt.assert_called()
+        mock_prompt_provider.get_system_prompt.assert_called()
 
     def test_detect_energy_related_contradiction(self, detector_agent, mock_prompt_provider):
         """
@@ -150,10 +229,23 @@ class TestContradictionDetector:
             "أوصي بالاستثمار في الطاقة الشمسية لتقليل التكاليف وزيادة الاستدامة.",
             "أرى أن التركيز على الوقود الأحفوري أكثر أمانًا وموثوقية."
         ]
-        mock_prompt_provider.get_contradiction_prompt.return_value = "Contradiction detection prompt"
-
-        # Act
-        result = detector_agent.detect(energy_sentences)
+        mock_prompt_provider.get_system_prompt.return_value = "Detect contradictions"
+        mock_prompt_provider.get_user_prompt.return_value = "Find contradictions"
+        
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.contradiction_llm_response import ContradictionLLMResponse
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ContradictionLLMResponse(contradictions=[])
+        
+        with patch.object(detector_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            from src.domain.models.classification_result import ClassificationResult, Category
+            classification_result = ClassificationResult(
+                categories=[Category(name="energy", phrases=energy_sentences)]
+            )
+            # Act
+            result = detector_agent.detect_contradiction(classification_result)
 
         # Assert
         assert result is not None
@@ -168,10 +260,23 @@ class TestContradictionDetector:
             "أوصي باعتماد المقترح مع البدء بتطبيقه على نطاق محدود لمدة 3 أشهر.",
             "أؤيد الموافقة على المقترح ولكن أرى أن تكون مدة التجربة سنة كاملة."
         ]
-        mock_prompt_provider.get_contradiction_prompt.return_value = "Contradiction detection prompt"
-
-        # Act
-        result = detector_agent.detect(duration_sentences)
+        mock_prompt_provider.get_system_prompt.return_value = "Detect contradictions"
+        mock_prompt_provider.get_user_prompt.return_value = "Find contradictions"
+        
+        from unittest.mock import patch, MagicMock
+        from src.domain.models.contradiction_llm_response import ContradictionLLMResponse
+        
+        mock_response = MagicMock()
+        mock_response.choices = [MagicMock()]
+        mock_response.choices[0].message.parsed = ContradictionLLMResponse(contradictions=[])
+        
+        with patch.object(detector_agent.client.beta.chat.completions, 'parse', return_value=mock_response):
+            from src.domain.models.classification_result import ClassificationResult, Category
+            classification_result = ClassificationResult(
+                categories=[Category(name="duration", phrases=duration_sentences)]
+            )
+            # Act
+            result = detector_agent.detect_contradiction(classification_result)
 
         # Assert
         assert result is not None

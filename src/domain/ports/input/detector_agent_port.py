@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import List
 
 from src.domain.models.classification_result import ClassificationResult
-from src.domain.models.contradiction_result import ContradictionResult
+from src.domain.models.contradiction_result import AnalysisContradictionResult
 
 
 class DetectorAgentPort(ABC):
@@ -15,7 +15,7 @@ class DetectorAgentPort(ABC):
     @abstractmethod
     def detect_contradiction(
         self, classification_result: ClassificationResult
-    ) -> List[ContradictionResult]:
+    ) -> AnalysisContradictionResult:
         """
         Analyse les phrases par catégorie et retourne les contradictions détectées.
         """

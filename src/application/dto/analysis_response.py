@@ -1,40 +1,46 @@
 """
 Module: analysis_response
 Description:
-    This module defines data transfer objects (DTOs) for the response of a text analysis request.
+    DTOs for the response of a text analysis request with category-based contradictions.
 """
 
 from typing import List
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel
 
 
 class ContradictionDTO(BaseModel):
     """
-    DTO representing a detected contradiction between sentences.
+    Represents a detected contradiction between sentences.
 
     Attributes:
         statements (List[str]): List of sentences involved in the contradiction.
-        severity (str): Severity level of the contradiction ("حاد" or "متوسط").
+        severity (str): Severity level ("حاد" or "متوسط").
         comment (str): Explanation of the contradiction in Arabic.
     """
-    statements: List[str] = Field(alias="إفادات")
-    severity: str = Field(alias="مستوى_التعارض")
-    comment: str = Field(alias="تعليق")
+    statements: List[str]
+    severity: str
+    comment: str
 
-    model_config = ConfigDict(
-        populate_by_name=True
-    )
+
+class CategoryContradictionDTO(BaseModel):
+    """
+    Represents contradictions detected within a specific category.
+
+    Attributes:
+        category_name (str): Name of the category.
+        statements (List[str]): All sentences in this category.
+        contradictions (List[ContradictionDTO]): List of contradictions within this category.
+    """
+    category_name: str
+    statements: List[str]
+    contradictions: List[ContradictionDTO]
 
 
 class AnalysisResponse(BaseModel):
     """
-    DTO for the response of a text analysis request.
+    Response DTO for text analysis.
 
     Attributes:
-        contradictions (List[ContradictionDTO]): List of detected contradictions.
+        categories (List[CategoryContradictionDTO]): List of categories with their contradictions.
     """
-    contradictions: List[ContradictionDTO] = Field(alias="التناقضات")
-
-    model_config = ConfigDict(
-        populate_by_name=True
-    )
+    categories: List[CategoryContradictionDTO]

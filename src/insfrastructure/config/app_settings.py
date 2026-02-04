@@ -3,6 +3,7 @@ Module: settings
 Description:
     Centralized configuration management for Azure OpenAI.
     Loads environment variables from a .env file and validates that all required settings are provided.
+    Includes configuration for CORS (Cross-Origin Resource Sharing) to control which origins can access the API.
 """
 
 import os
@@ -16,12 +17,25 @@ class AppSettings:
     Centralized configuration for Azure OpenAI.
 
     Reads environment variables from a .env file and performs basic validation.
-    Provides attributes for CORS origins, endpoint, API key, API version, and deployment model.
+    Provides the following attributes:
+        - cors_origins (List[str]): List of allowed origins for CORS.
+        - endpoint (str): Azure OpenAI endpoint URL.
+        - api_key (str): API key for Azure OpenAI.
+        - api_version (str): Version of the Azure OpenAI API.
+        - model (str): Deployment/model name used for OpenAI requests.
     """
 
     def __init__(self):
         """
-        Initializes the Azure OpenAI settings by reading environment variables and validating them.
+        Initializes the Azure OpenAI settings by reading environment variables
+        and validating them.
+
+        This includes reading the following:
+            - AZURE_OPENAI_ENDPOINT
+            - AZURE_OPENAI_API_KEY
+            - AZURE_OPENAI_API_VERSION
+            - AZURE_OPENAI_DEPLOYMENT_NAME
+            - CORS_ORIGINS (a comma-separated list of allowed origins for CORS)
 
         Raises:
             ConfigurationException: If any required environment variable is missing.

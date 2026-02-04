@@ -15,7 +15,7 @@ from src.domain.models.classification_result import ClassificationResult
 from src.domain.models.contradiction_llm_response import ContradictionLLMResponse
 from src.domain.models.contradiction_result import AnalysisContradictionResult, Contradiction, CategoryContradictionResult
 from src.domain.ports.input.detector_agent_port import DetectorAgentPort
-from src.insfrastructure.config.settings import AzureOpenAISettings
+from src.insfrastructure.config.app_settings import AppSettings
 from src.insfrastructure.prompts.prompt_loader import PromptyLoader
 
 
@@ -25,12 +25,12 @@ class ContradictionDetector(DetectorAgentPort):
     and detecting contradictions between them.
     """
 
-    def __init__(self, azure_settings: AzureOpenAISettings, prompt_provider: PromptyLoader):
+    def __init__(self, azure_settings: AppSettings, prompt_provider: PromptyLoader):
         """
         Initializes the contradiction detector agent.
 
         Args:
-            azure_settings (AzureOpenAISettings): Azure OpenAI configuration.
+            azure_settings (AppSettings): Application configuration.
             prompt_provider (PromptyLoader): Provider for system and user prompts.
         """
         self.endpoint = azure_settings.endpoint

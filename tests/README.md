@@ -1,19 +1,30 @@
 # Tests - text-contradiction-detector
 
+## Statistiques des tests
+
+- **Total Tests**: 76
+- **Tests Unitaires**: 63
+- **Tests d'Intégration**: 13
+
 ## Structure des tests
 
 La suite de tests est organisée en deux catégories principales :
 
 ### Tests unitaires (`tests/unit/`)
-- `test_analyse_text_use_case.py` - Tests du use case d'analyse de texte
-- `test_text_analysis_service.py` - Tests du service d'analyse
-- `test_sentence_classifier_agent.py` - Tests de l'agent de classification
-- `test_contradiction_detector_agent.py` - Tests de l'agent de détection de contradictions
-- `test_dtos.py` - Tests des Data Transfer Objects
-- `test_settings.py` - Tests de la configuration
+- `test_analyse_text_use_case.py` - Tests du use case d'analyse de texte (6 tests)
+- `test_text_analysis_service.py` - Tests du service d'analyse (7 tests)
+- `test_sentence_classifier_agent.py` - Tests de l'agent de classification (8 tests)
+- `test_contradiction_detector_agent.py` - Tests de l'agent de détection de contradictions (9 tests)
+- `test_contradiction_llm_response.py` - Tests des réponses LLM (10 tests)
+- `test_dtos.py` - Tests des Data Transfer Objects (9 tests)
+- `test_settings.py` - Tests de la configuration (10 tests : 7 initiaux + 3 tests CORS)
+
+**Total tests unitaires: 63**
 
 ### Tests d'intégration (`tests/integration/`)
-- `test_main_api.py` - Tests de l'API principales
+- `test_main_api.py` - Tests de l'API principales (13 tests : 10 initiaux + 3 tests exceptions/CORS)
+
+**Total tests d'intégration: 13**
 
 ## Fixtures disponibles
 
@@ -68,12 +79,13 @@ pytest tests/ -v
 
 Les tests couvrent les domaines suivants :
 
-1. **Use Cases** - Logique métier principale d'analyse de texte
-2. **Services** - Services de domaine et orchestration
-3. **Agents** - Agents IA pour classification et détection
-4. **DTOs** - Sérialisation et désérialisation des données
-5. **Configuration** - Paramètres et configuration de l'application
-6. **API** - Points de terminaison HTTP et intégration
+1. **Use Cases** - Logique métier principale d'analyse de texte (6 tests)
+2. **Services** - Services de domaine et orchestration (7 tests)
+3. **Agents** - Agents IA pour classification et détection (17 tests)
+4. **LLM Response** - Mapping et traitement des réponses LLM (10 tests)
+5. **DTOs** - Sérialisation et désérialisation des données (9 tests)
+6. **Configuration** - Paramètres et configuration de l'application avec CORS (10 tests)
+7. **API** - Points de terminaison HTTP et intégration + exception handling (13 tests)
 
 ## Notes
 

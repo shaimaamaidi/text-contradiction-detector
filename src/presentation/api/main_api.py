@@ -7,27 +7,36 @@ Description:
         - GET /health: Health check endpoint.
 """
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.application.dto.analysis_request import AnalysisRequest
 from src.application.dto.analysis_response import AnalysisResponse
+from src.domain.exceptions.app_exception import AppException
 from src.insfrastructure.di.container import Container
+from src.insfrastructure.handlers.exception_handler import FastAPIExceptionHandler
 
 # === FASTAPI INITIALIZATION ===
 app = FastAPI(title="Text Contradiction API")
 
-# Enable CORS if needed
+# === INIT AGENTS AND SERVICES AND APP CONFIGURATION ===
+container = Container()
+
+# Enable CORS 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=container.app_settings.cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# === INIT AGENTS AND SERVICES ===
-container = Container()
+# Handlers
+app.add_exception_handler(AppException, FastAPIExceptionHandler.handle_app_exception)
+app.add_exception_handler(RequestValidationError, FastAPIExceptionHandler.handle_validation_exception)
+app.add_exception_handler(Exception, FastAPIExceptionHandler.handle_generic_exception)
+
 
 # === POST ENDPOINT FOR TEXT ANALYSIS ===
 @app.post("/analyze", response_model=AnalysisResponse)
@@ -45,13 +54,9 @@ async def analyze_text(request: AnalysisRequest):
         AnalysisResponse: DTO containing detected contradictions.
     """
     if not request.sentences:
-        raise HTTPException(status_code=400, detail="The list of sentences is empty.")
+        raise AppException("The list of sentences is empty.", code="EMPTY_TEXT")
 
-    try:
-        response: AnalysisResponse = container.analyze_text_use_case.execute(request)
-        return response
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return container.analyze_text_use_case.execute(request)
 
 
 # === HEALTH CHECK ENDPOINT ===

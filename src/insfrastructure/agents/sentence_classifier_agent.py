@@ -12,7 +12,7 @@ from openai.types.chat import ChatCompletionSystemMessageParam, ChatCompletionUs
 from src.domain.models.classification_llm_response import ClassificationLLMResponse
 from src.domain.models.classification_result import ClassificationResult, Category
 from src.domain.ports.input.classifier_agent_port import ClassifierAgentPort
-from src.insfrastructure.config.settings import AzureOpenAISettings
+from src.insfrastructure.config.app_settings import AppSettings
 from src.insfrastructure.prompts.prompt_loader import PromptyLoader
 
 
@@ -22,12 +22,12 @@ class SentenceClassifier(ClassifierAgentPort):
     Converts the LLM response into domain-level ClassificationResult objects.
     """
 
-    def __init__(self, azure_settings: AzureOpenAISettings, prompt_provider: PromptyLoader):
+    def __init__(self, azure_settings: AppSettings, prompt_provider: PromptyLoader):
         """
         Initializes the sentence classifier agent.
 
         Args:
-            azure_settings (AzureOpenAISettings): Azure OpenAI configuration.
+            azure_settings (AppSettings): Application configuration.
             prompt_provider (PromptyLoader): Provider for system and user prompts.
         """
         self.endpoint = azure_settings.endpoint

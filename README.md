@@ -209,9 +209,9 @@ tests/
 ```
 
 ### Test Statistics
-- **Total Tests**: 70
-- **Unit Tests**: 60
-- **Integration Tests**: 10
+- **Total Tests**: 76
+- **Unit Tests**: 63
+- **Integration Tests**: 13
 
 ### Test Fixtures
 
@@ -246,16 +246,26 @@ pytest-mock      # Mocking utilities
 
 ## Configuration
 
-### Azure OpenAI Settings
+### Application Settings
 
-Located in `src/insfrastructure/config/settings.py`:
+Located in `src/insfrastructure/config/app_settings.py`:
 
 ```python
-class AzureOpenAISettings:
+class AppSettings:
+    cors_origins: list         # CORS allowed origins (e.g., ["http://localhost:3000"])
     endpoint: str              # Azure OpenAI endpoint URL
     api_key: str               # API authentication key
-    api_version: str           # API version (e.g., "2024-01-01")
-    model: str                 # Deployment name (e.g., "gpt-4")
+    api_version: str           # API version (e.g., "2024-08-01-preview")
+    model: str                 # Deployment name (e.g., "gpt-4o")
+```
+
+**Environment Variables:**
+```env
+CORS_ORIGINS=<your-cors-1>,<your-cors-2>
+AZURE_OPENAI_ENDPOINT=https://<your-instance>.openai.azure.com/
+AZURE_OPENAI_API_KEY=<your-api-key>
+AZURE_OPENAI_API_VERSION=<your-api-version>
+AZURE_OPENAI_DEPLOYMENT_NAME=<your-deployment-model>
 ```
 
 ### Prompt Templates
@@ -321,6 +331,6 @@ docker-compose logs -f
 🚀 **Active Development**
 
 - ✅ Core functionality complete
-- ✅ Test coverage: 56 tests
+- ✅ Test coverage: 76 tests (63 unit + 13 integration)
 - ✅ API endpoints operational
 

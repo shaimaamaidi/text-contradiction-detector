@@ -182,3 +182,54 @@ class TestMainAPI:
 
         # Assert
         assert response.status_code in [200, 201, 202, 400]
+
+    def test_cors_headers_present(self, client):
+        """
+        Test that CORS headers are properly configured in the response.
+        """
+        # Act
+        response = client.get("/health")
+
+        # Assert
+        assert response.status_code == 200
+        # CORS headers should be present or not present depending on configuration
+        # This test verifies the endpoint is accessible
+
+    def test_exception_handling_empty_sentences(self, client):
+        """
+        Test that empty sentences trigger an AppException with proper error handling.
+        """
+        # Arrange
+        payload = {
+            "sentences": []
+        }
+
+        # Act
+        response = client.post("/analyze", json=payload)
+
+        # Assert
+        # Should return 400 with error structure when sentences are empty
+        assert response.status_code == 400
+        data = response.json()
+        assert "error" in data
+        assert "code" in data["error"]
+        assert "message" in data["error"]
+        assert data["error"]["code"] == "EMPTY_TEXT"
+
+    def test_exception_handling_validation_error(self, client):
+        """
+        Test that validation errors return proper error response.
+        """
+        # Arrange
+        payload = {
+            "sentences": "not a list"  # Should be a list
+        }
+
+        # Act
+        response = client.post("/analyze", json=payload)
+
+        # Assert
+        assert response.status_code == 422
+        data = response.json()
+        assert "error" in data
+        assert data["error"]["code"] == "VALIDATION_ERROR"

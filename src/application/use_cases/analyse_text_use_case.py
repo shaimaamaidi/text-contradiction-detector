@@ -9,6 +9,7 @@ Description:
 from typing import List
 from src.application.dto.analysis_request import AnalysisRequest
 from src.application.dto.analysis_response import AnalysisResponse, ContradictionDTO, CategoryContradictionDTO
+from src.domain.exceptions.app_exception import AppException
 from src.domain.models.contradiction_result import AnalysisContradictionResult
 from src.domain.ports.output.analyze_text_port import AnalyzeTextPort
 from src.domain.services.text_analysis_service import TextAnalysisService
@@ -34,7 +35,7 @@ class AnalyzeTextUseCase(AnalyzeTextPort):
             AnalysisResponse: Response DTO with categories and contradictions.
         """
         if not request.sentences:
-            return AnalysisResponse.model_construct(categories=[])
+            raise AppException("The list of sentences is empty.", code="EMPTY_TEXT")
 
         # Call the domain service
         analysis_result: AnalysisContradictionResult = self.service.analyze_text(request.sentences)

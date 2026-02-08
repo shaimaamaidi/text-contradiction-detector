@@ -36,7 +36,6 @@ class TestAnalyzeTextUseCase:
         expected_response = AnalysisResponse(
             categories=[{
                 "category_name": "support",
-                "statements": sample_sentences,
                 "contradictions": []
             }]
         )
@@ -75,7 +74,6 @@ class TestAnalyzeTextUseCase:
         expected_response = AnalysisResponse(
             categories=[{
                 "category_name": "support",
-                "statements": [sample_single_sentence],
                 "contradictions": []
             }]
         )
@@ -99,7 +97,6 @@ class TestAnalyzeTextUseCase:
                 "category_name": "support",
                 "statements": contradictory_sentences,
                 "contradictions": [{
-                    "statements": contradictory_sentences,
                     "severity": "حاد",
                     "comment": "Contradiction detected"
                 }]
@@ -135,7 +132,6 @@ class TestAnalyzeTextUseCase:
         expected_response = AnalysisResponse(
             categories=[{
                 "category_name": "support",
-                "statements": non_contradictory_sentences,
                 "contradictions": []
             }]
         )

@@ -56,7 +56,6 @@ class AnalyzeTextUseCase(AnalyzeTextPort):
             categories_dto.append(
                 CategoryContradictionDTO(
                     category_name=category_result.category_name,
-                    statements=category_result.statements,
                     contradictions=contradictions_dto
                 )
             )

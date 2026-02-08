@@ -6,7 +6,7 @@ Description:
 """
 
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock
 from src.domain.services.text_analysis_service import TextAnalysisService
 
 
@@ -46,7 +46,6 @@ class TestTextAnalysisService:
         contradiction_result = AnalysisContradictionResult(
             categories=[CategoryContradictionResult(
                 category_name="test",
-                statements=[sample_single_sentence],
                 contradictions=[]
             )]
         )
@@ -76,7 +75,6 @@ class TestTextAnalysisService:
         contradiction_result = AnalysisContradictionResult(
             categories=[CategoryContradictionResult(
                 category_name="test",
-                statements=sample_sentences,
                 contradictions=[]
             )]
         )
@@ -105,7 +103,6 @@ class TestTextAnalysisService:
         contradiction_result = AnalysisContradictionResult(
             categories=[CategoryContradictionResult(
                 category_name="test",
-                statements=contradictory_sentences,
                 contradictions=[
                     Contradiction(
                         statements=contradictory_sentences,
@@ -157,7 +154,6 @@ class TestTextAnalysisService:
         contradiction_result = AnalysisContradictionResult(
             categories=[CategoryContradictionResult(
                 category_name="test",
-                statements=[sample_single_sentence],
                 contradictions=[]
             )]
         )
@@ -188,7 +184,6 @@ class TestTextAnalysisService:
         contradiction_result = AnalysisContradictionResult(
             categories=[CategoryContradictionResult(
                 category_name="test",
-                statements=[sample_single_sentence],
                 contradictions=[]
             )]
         )
@@ -224,7 +219,6 @@ class TestTextAnalysisService:
         contradiction_result = AnalysisContradictionResult(
             categories=[CategoryContradictionResult(
                 category_name="test",
-                statements=sentences,
                 contradictions=[]
             )]
         )

@@ -32,11 +32,9 @@ class CategoryContradictionResult:
 
     Attributes:
         category_name (str): Name of the category.
-        statements (List[str]): All sentences in this category.
         contradictions (List[Contradiction]): List of contradictions within this category.
     """
     category_name: str
-    statements: List[str]
     contradictions: List[Contradiction]
 
 

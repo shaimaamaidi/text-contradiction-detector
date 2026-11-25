@@ -74,7 +74,6 @@ class TestAnalysisResponse:
         categories = [
             {
                 "category_name": "support",
-                "statements": ["Phrase 1"],
                 "contradictions": []
             }
         ]
@@ -94,7 +93,6 @@ class TestAnalysisResponse:
         categories = [
             {
                 "category_name": "support",
-                "statements": ["Phrase 1", "Phrase 2"],
                 "contradictions": [
                     {
                         "statements": ["Phrase 1", "Phrase 2"],
@@ -120,7 +118,6 @@ class TestAnalysisResponse:
         categories = [
             {
                 "category_name": "support",
-                "statements": sample_sentences,
                 "contradictions": []
             }
         ]
@@ -140,7 +137,6 @@ class TestAnalysisResponse:
         categories = [
             {
                 "category_name": "support",
-                "statements": sample_sentences,
                 "contradictions": []
             }
         ]
@@ -159,7 +155,6 @@ class TestAnalysisResponse:
         categories = [
             {
                 "category_name": "support",
-                "statements": ["Phrase 1"],
                 "contradictions": []
             }
         ]

@@ -66,7 +66,6 @@ class ContradictionDetector(DetectorAgentPort):
                 all_results.append(
                     CategoryContradictionResult(
                         category_name=category.name,
-                        statements=category.phrases,
                         contradictions=[]
                     )
                 )
@@ -153,6 +152,5 @@ class ContradictionDetector(DetectorAgentPort):
 
         return CategoryContradictionResult(
             category_name=category_name,
-            statements=sentences,
             contradictions=contradictions_list
         )
